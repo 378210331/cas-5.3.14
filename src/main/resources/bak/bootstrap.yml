@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: cas
+  profiles:
+    active: mysql
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  aop:
+    auto: true
+    proxy-target-class: true
+  thymeleaf:
+    cache: true
+    encoding: UTF-8
+    mode: HTML
+    template-resolver-order: 100

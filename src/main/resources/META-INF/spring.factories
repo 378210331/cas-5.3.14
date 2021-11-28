@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.cas.config.RestConfiguration, \
+  com.cas.mobile.MobileConfiguration,\
+  com.cas.password.PasswordConfiguration

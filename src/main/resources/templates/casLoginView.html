@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>统一认证</title>
+</head>
+
+
+<body>
+<main role="main" style="height: 100%;">
+    <div layout:fragment="content">
+<div class="container-cas">
+    <div class="login-wrap">
+        <div class="close-btn">
+            <img th:src="@{/images/close.png}" alt="">
+        </div>
+        <div class="title">登录个人门户</div>
+        <!-- 登陆方式1一 -->
+        <div class="type1">
+            <div class="tab">
+                <div class="item" id="password">密码登录</div>
+                <div class="item" id="message">短信登录</div>
+            </div>
+            <div class="msg-wrap">
+                <div class="msg-cont">
+                    <form class="login-form" method="post" id="fm-message" th:object="${credential}" action="login">
+                        <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                        <input type="hidden" name="_eventId" value="submitMobile"/>
+                        <input type="hidden" name="geolocation"/>
+                        <div class="input-wrap">
+                            <img th:src="@{/images/account.png}" alt="">
+                            <input type="text" name="phoneNumber" id="phoneNumber" placeholder="请输入手机号码">
+                        </div>
+                        <div class="code-wrap">
+                            <input type="text" name="validateCode" id="validateCode">
+                            <button class="sendcode" type="button">发送验证码</button>
+                        </div>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                            <span th:each="err : ${#fields.errors('*')}" th:utext="${err}">Example error</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="routine">
+                <form class="login-form" method="post" id="fm-password" th:object="${credential}" action="login">
+                    <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                    <input type="hidden" name="_eventId" value="submitPassword"/>
+                    <input type="hidden" name="geolocation"/>
+                    <div class="input-wrap">
+                        <div class="account">
+                            <img th:src="@{/images/account.png}" alt="">
+                            <input type="text" name="username" id="username" placeholder="请输入账号">
+                        </div>
+                        <div class="psw">
+                            <img th:src="@{/images/psw.png}" alt="">
+                            <input type="password" name="password" id="passwd" placeholder="请输入密码">
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <span th:each="err : ${#fields.errors('*')}" th:utext="${err}">Example error</span>
+                    </div>
+                </form>
+            </div>
+            <div class="login-btn">登录</div>
+  <!--          <div class="remember">
+                <input type="checkbox">
+                <label for="" class="label">下次自动登录</label>
+            </div>
+            <div class="forget">
+                忘记密码
+            </div>-->
+            <div class="footer" id="qrcode">二维码登录</div>
+        </div>
+
+        <!-- 登陆方式1end一 -->
+        <!-- 二维码登陆方式 -->
+        <div class="qrcode-wrap">
+            <div class="type2">
+                <div class="scan-img">
+                    <img src="" alt="">
+                </div>
+                <div class="scan">手机扫一扫</div>
+                <div class="other" id="othertype">其他方式登录</div>
+            </div>
+        </div>
+        <!-- 二维码登陆方式二点、nd -->
+    </div>
+
+</div>
+    </div>
+</main>
+</body>
+
+</html>

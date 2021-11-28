@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>统一认证</title>
+</head>
+
+<body class="login" style="background-color: whitesmoke">
+<main role="main" class="container mt-3 mb-3">
+    <div layout:fragment="content">
+        <div class="login-wrap">
+            <div class="content-wrap">
+                <div class="left-wrap">
+                    <div class="title">
+                        <p class="top-tilte">统一认证</p>
+                        <p class="bottom-tilte">安全可靠，广泛兼容</p>
+                    </div>
+                </div>
+                <div class="right-wrap">
+
+                    <ul class="nav nav-tabs" id="loginType">
+                        <li><a href="#nameLogin" data-toggle="tab">账户密码登录</a></li>
+                        <li><a href="#phoneLogin" data-toggle="tab">手机号码登录</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="nameLogin">
+                            <form class="login-form" method="post" id="fm1" th:object="${credential}" action="login">
+                                <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                                <input type="hidden" name="_eventId" value="submit"/>
+                                <input type="hidden" name="geolocation"/>
+                                <p class="login-mess">账户密码登录</p>
+                                <p class="login-name">
+                                    <span class="icon-name"></span>
+                                    <input  id="username" size="25" tabindex="1" type="text" th:disabled="${guaEnabled}" th:field="*{username}" th:accesskey="#{screen.welcome.label.netid.accesskey}" autocomplete="off" placeholder="请输入用户名"/>
+                                </p>
+                                <p class="login-password">
+                                    <span class="icon-password"></span>
+                                    <input type="password" id="password" size="25" tabindex="2" th:accesskey="#{screen.welcome.label.password.accesskey}" th:field="*{password}" autocomplete="off" placeholder="请输入密码"/>
+                                    <button class="hide-pass" type="button"></button>
+                                </p>
+                                <p class="login-tip" style="display:none;">
+                                    <span class="icon-tip"></span><span class="tip"></span>
+                                </p>
+                      <!--          <p class="login-validate">
+                                    <span class="left"><span class="icon-validate"></span>
+                                        <input type="text" placeholder="请在此输入验证码"/></span>
+                                        <span class="right"><img alt="验证码" title="验证码" src="../../images/login/genimage.png">
+                                        <span class="change" title="换一张">换一张</span></span>
+                                </p>-->
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                                    <span th:each="err : ${#fields.errors('*')}" th:utext="${err}">Example error</span>
+                                </div>
+                                <p class="login-btn">
+                                    <button type="submit">登录</button>
+                                </p>
+                            </form>
+                        </div>
+                        <div class="tab-pane" id="phoneLogin">
+                            <form class="login-form" method="post" id="fm1" th:object="${credential}" action="login">
+                                <input type="hidden" name="execution" th:value="${flowExecutionKey}"/>
+                                <input type="hidden" name="_eventId" value="submitMobile"/>
+                                <input type="hidden" name="geolocation"/>
+                                <p class="login-mess">手机号码登录</p>
+                                <p class="login-name">
+                                    <span class="icon-mobile"></span>
+                                    <input  placeholder="手机号" name="phoneNumber" id="phoneNumber" autocomplete="off"/>
+                                </p>
+                                <p class="login-validate">
+                                    <span class="left"><span class="icon-validate"></span>
+                                        <input type="text" placeholder="请在此输入验证码"/></span>
+                                    <span class="right" style="width: 80px">
+                                         <button  style="height: 100%" id="getValidateCode" type="button">获取验证码</button>
+                                    </span>
+                                </p>
+                                <p class="login-tip" style="display:none;">
+                                    <span class="icon-tip"></span><span class="tip"></span>
+                                </p>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                                    <span th:each="err : ${#fields.errors('*')}" th:utext="${err}">Example error</span>
+                                </div>
+                                <p class="login-btn">
+                                    <button type="submit">登录</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

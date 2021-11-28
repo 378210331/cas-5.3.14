@@ -1,0 +1,134 @@
+cas:
+  serviceRegistry: # 服务存储方式,配置为jpa,数据库存储
+    initFromJson: true # 从resources/services/*.json 中读取服务
+    jpa:
+      url: ${DB_URL:jdbc:mysql://vm:3306/cloud?characterEncoding=UTF-8&useUnicode=true&useSSL=false&serverTimezone=GMT%2B8}
+      user: ${DB_USER:root}
+      password: ${DB_PASSWORD:Root@mysql@162}
+      dialect: ${DB_DIALECT:org.hibernate.dialect.MySQL5Dialect}
+      driverClass: ${DB_CLASS:com.mysql.cj.jdbc.Driver}
+      ddlAuto: update
+    schedule: # 服务定时加载
+      repeatInterval: 120000
+      startDelay: 15000
+  authn: #数据库查询鉴权方式,包括鉴权数据库连接信息,sql以账户名称入参
+    jdbc:
+      query:
+        - dialect: ${cas.serviceRegistry.jpa.dialect}
+          driverClass: ${cas.serviceRegistry.jpa.driverClass}
+          password: ${cas.serviceRegistry.jpa.password}
+          user: ${cas.serviceRegistry.jpa.user}
+          url: ${cas.serviceRegistry.jpa.url}
+          sql: "select u.id,u.username,u.realname,u.dep_id as depId,password, GROUP_CONCAT(ur.role_id)  as roleId
+          from sys_user u LEFT JOIN sys_user_role ur on u.id = ur.user_id where u.username=?
+          group by u.id"
+         # sql: "select t.id,t.username,t.realname,t.password,t.depId,t.identityId,GROUP_CONCAT(r.role_id)  as roleId from (
+         #      select u.id,u.username,u.password,u.realname,i.dep_id as depId,i.id as identityId
+         #       from sys_user u ,sys_identity i where u.id = i.user_id and i.main_flag = '1' and u.username = ?) t left join sys_identity_role r on t.identityId = r.identity_id
+         #       group by t.id,t.username,t.realname,t.password,t.depId,t.identityId"
+          fieldPassword: password #鉴定的数据库密码字段
+          principalAttributeList: id,username,realname,depId,roleId,identityId #附加到客户端兑换的字段数据
+          passwordEncoder:
+            characterEncoding: UTF-8
+            type: com.cas.encoder.SM3PasswordEncoder # 密码加密方式,基础的有NONE ,MD5,BCRYPT
+  ticket: # 待兑换的ticket使用redis存储
+    registry:
+      redis:
+        database: ${REDIS_DB:0}
+        host: ${REDIS_HOST:vm}
+        password: ${REDIS_PASSWORD:redis}
+        port: ${REDIS_PORT:6379}
+        timeout: 2000
+        usePool: true
+        useSsl: false
+    st:
+      maxLength: 20
+      numberOfUses: 1
+      timeToKillInSeconds: 100 # ST100秒,客户端获取ticket后,100秒内要向cas服务端兑换
+    tgt:
+      maxTimeToLiveInSeconds: 7200 # 服务端TGT存储时间,决定浏览器cookies中的TGT有效时间,有效期间同意浏览器客户端向cas获取ticket不需要登录
+  httpWebRequest:
+    header:
+      xframe: false
+  rest:
+    attributeName: cas # rest客户端基础验证
+    attributeValue: cas # rest客户端基础验证
+  logout:
+    followServiceRedirects: true # 登出后是否重定向到携带的service参数url
+  tgc:
+    secure: false
+
+server:
+  context-path: /cas
+  port: 8080
+  session:
+    cookie:
+      http-only: true
+    timeout: 300
+    tracking-modes: COOKIE
+  compression:
+    enabled: true
+    mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain
+  connection-timeout: 20000
+  error:
+    include-stacktrace: ALWAYS
+  max-http-header-size: 2097152
+  ssl:
+    key-password: changeit
+    key-store: file:/etc/cas/thekeystore
+    key-store-password: changeit
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: '%t %a "%r" %s (%D ms)'
+      suffix: .log
+    basedir: build/tomcat
+    max-http-post-size: 2097152
+    max-threads: 200
+    min-spare-threads: 10
+    port-header: X-Forwarded-Port
+    protocol-header: X-Forwarded-Proto
+    protocol-header-https-value: https
+    remote-ip-header: X-FORWARDED-FOR
+    uri-encoding: UTF-8
+  use-forward-headers: true
+  context-parameters:
+    isLog4jAutoInitializationDisabled: true
+
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  aop:
+    auto: true
+    proxy-target-class: true
+  thymeleaf:
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+    template-resolver-order: 100
+
+endpoints:
+  enabled: false
+  restart:
+    enabled: false
+  sensitive: true
+  shutdown:
+    enabled: false
+management:
+  add-application-context-header: false
+  context-path: /status
+  health:
+    status:
+      order: WARN, DOWN, OUT_OF_SERVICE, UNKNOWN, UP
+  security:
+    enabled: true
+    roles: ACTUATOR,ADMIN
+    sessions: if_required
+
+logging:
+  level:
+    org:
+      apereo: WARN
